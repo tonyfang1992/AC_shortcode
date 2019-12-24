@@ -12,4 +12,4 @@ const urlSchema = new Schema({
   }
 })
 
-module.exports = mongoose.model('url', urlSchema)
+module.exports = mongoose.model('Url', urlSchema)
