@@ -4,7 +4,7 @@ const port = 3000
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const exphbs = require('express-handlebars')
-const crypto = require('crypto')
+
 const Url = require('./model/url')
 
 function getRandomCode(n, m) {
@@ -20,7 +20,7 @@ function getRandomCode(n, m) {
   return nums;
 }
 
-
+app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
@@ -33,20 +33,28 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 app.get('/', (req, res) => {
-  console.log(getRandomCode(0, 61))
+
   res.render('index')
 })
 
+app.get('/:shortCode', (req, res) => {
+  Url.findOne({
+    shortCode: req.params.shortCode
+  }, (err, shortCode) => {
+    return res.render('url', { shortCode: shortCode })
+  })
+})
+
 app.post('/', (req, res) => {
-  let randomString = crypto.randomBytes(32).toString('base64').substr(0, 5)
+
 
   const url = new Url({
     url: req.body.Url,
-    shortCode: randomString
+    shortCode: getRandomCode(0, 61)
   })
   url.save(err => {
     if (err) return console.error(err)
-    // return res.redirect('/')
+
   })
   res.render('index')
   console.log(req.body.Url)

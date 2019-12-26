@@ -1,7 +1,17 @@
-<form action="/" method="POST">
-  <div class="form-group">
-    <label for="Url">請輸入網址</label>
-    <input type="text" class="form-control" id="Url" placeholder="ex:www.google.com" name="Url">
-    <button type="submit">縮網址</button>
-  </div>
-</form>
+<div class="container text-center">
+
+  <form action="/" method="POST">
+    <div class="form-group text-center">
+
+      <label for="Url" class="col-12 mt-3">URL Shortener</label>
+      <img src="http://localhost:3000/images/link.png" alt="link img">
+      <div class="container row mb-3 mt-3">
+        <div class="container col-4"></div>
+        <input type="text" class="form-control col-4" id="Url" placeholder="ex:www.google.com" name="Url">
+        <div class="container col-4"></div>
+      </div>
+      <button type="submit" class="btn-outline-primary col-3">shorten</button>
+    </div>
+  </form>
+
+</div>
