@@ -4,8 +4,9 @@ const port = 3000
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const exphbs = require('express-handlebars')
-
+const flash = require('connect-flash')
 const Url = require('./model/url')
+const session = require('express-session')
 
 function getRandomCode(n, m) {
 
@@ -20,12 +21,24 @@ function getRandomCode(n, m) {
   return nums;
 }
 
+app.use(session({
+  secret: 'your secret key',
+  resave: false,
+  saveUninitialized: true,
+}))
+app.use(flash())
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/url', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
 const db = mongoose.connection
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg')
+  res.locals.warning_msg = req.flash('warning_msg')
+}
+
+)
 db.on('error', () => {
   console.log('mongodb error!')
 })
@@ -46,18 +59,36 @@ app.get('/:shortCode', (req, res) => {
 })
 
 app.post('/', (req, res) => {
+  let errors = []
+  let a = req.body.Url
+  if (a === '') {   //if input is null
+    console.log(req.body.Url)
+    errors.push({ message: '請輸入網址' })
+    // return res.render('index')
 
+  } else {
+    let code = ''
+    code += getRandomCode(0, 61)
+    Url.findOne({
+      shortCode: code
+    }).then(shortCode => {
+      if (shortCode) {   //confirm shortCode exist or not
+        console.log('shortCode already exists')
+        res.render('index')
+      } else {
 
-  const url = new Url({
-    url: req.body.Url,
-    shortCode: getRandomCode(0, 61)
-  })
-  url.save(err => {
-    if (err) return console.error(err)
+        const url = new Url({
+          url: req.body.Url,
+          shortCode: code
+        })
+        url.save(err => {
+          if (err) return console.error(err)
 
-  })
-  res.render('index')
-  console.log(req.body.Url)
+        })
+        res.render('index2', { code: code })
+      }
+    })
+  }
 })
 
 app.listen(port, () => {
