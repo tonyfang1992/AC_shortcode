@@ -8,6 +8,7 @@ const flash = require('connect-flash')
 const Url = require('./model/url')
 const session = require('express-session')
 
+
 function getRandomCode(n, m) {
 
   const data = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
@@ -34,11 +35,11 @@ app.set('view engine', 'handlebars')
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/url', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
 const db = mongoose.connection
 app.use((req, res, next) => {
+  res.locals.user = req.user
   res.locals.success_msg = req.flash('success_msg')
   res.locals.warning_msg = req.flash('warning_msg')
-}
-
-)
+  next()
+})
 db.on('error', () => {
   console.log('mongodb error!')
 })
@@ -62,9 +63,11 @@ app.post('/', (req, res) => {
   let errors = []
   let a = req.body.Url
   if (a === '') {   //if input is null
-    console.log(req.body.Url)
+
     errors.push({ message: '請輸入網址' })
-    // return res.render('index')
+    res.render('index', {
+      errors
+    })
 
   } else {
     let code = ''
@@ -91,6 +94,6 @@ app.post('/', (req, res) => {
   }
 })
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
   console.log(`the web is running on http://localhost${port}`)
 })

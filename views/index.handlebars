@@ -2,7 +2,7 @@
 
   <form action="/" method="POST">
     <div class="form-group text-center">
-      {{> messages}}
+
       <label for="Url" class="col-12 mt-3">URL Shortener</label>
       <img src="http://localhost:3000/images/link.png" alt="link img">
       <div class="container row mb-3 mt-3">
@@ -10,8 +10,11 @@
         <input type="text" class="form-control col-4" id="Url" placeholder="ex:www.google.com" name="Url">
         <div class="container col-4"></div>
       </div>
+      <div class="container row">
+        {{> messages}}
+      </div>
+
       <button type="submit" class="btn-outline-primary col-3">shorten</button>
     </div>
   </form>
-
 </div>
